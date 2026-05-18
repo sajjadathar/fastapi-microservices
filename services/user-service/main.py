@@ -3,6 +3,8 @@ from contextlib import asynccontextmanager
 from db import engine, get_session
 from sqlmodel import SQLModel, Session, select
 from models import User, UserPublic
+from fastapi.middleware.cors import CORSMiddleware
+
 
 import grpc
 import product_pb2
@@ -14,6 +16,14 @@ async def lifespan(app: FastAPI):
     yield
 
 app = FastAPI(lifespan=lifespan)
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"]
+)
 
 @app.get("/health")
 def health_check():
