@@ -8,6 +8,9 @@ dependencies = [
     "fastapi[standard]>=0.136.1",
     "grpcio>=1.80.0",
     "grpcio-tools>=1.80.0",
+    "passlib[bcrypt]>=1.7.4",
     "psycopg[binary]>=3.3.4",
+    "pyjwt>=2.12.1",
+    "python-dotenv>=1.2.2",
     "sqlmodel>=0.0.38",
 ]
