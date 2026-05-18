@@ -8,7 +8,9 @@ wheels/
 
 # Virtual environments
 .venv
+venv/
+env/
 
-.vscode
-
-.env
+# Version control
+.git
+.github
