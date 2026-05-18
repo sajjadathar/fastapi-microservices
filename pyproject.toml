@@ -5,7 +5,7 @@ description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
-    "fastapi>=0.136.1",
+    "fastapi[standard]>=0.136.1",
     "pyjwt>=2.12.1",
     "python-dotenv>=1.2.2",
 ]
@@ -14,4 +14,6 @@ dependencies = [
 members = [
     "services/user-service",
     "services/product-service",
+    "services/order-service",
+    "services/inventory-service",
 ]
