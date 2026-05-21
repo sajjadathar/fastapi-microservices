@@ -21,7 +21,7 @@ jobs:
       - name: Install uv
         run: pip install uv
 
-      - name: Install user-service dependencies
+      - name: Install user_service dependencies
         run: uv sync --package user_service --frozen --no-dev
 
       - name: Run tests
