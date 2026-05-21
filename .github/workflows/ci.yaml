@@ -25,4 +25,4 @@ jobs:
         run: uv sync --package user_service --frozen
 
       - name: Run tests
-        run: uv run pytest services/user_service/tests/ -v
+        run: PYTHONPATH=. uv run pytest services/user_service/tests/ -v
