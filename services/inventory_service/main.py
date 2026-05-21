@@ -3,10 +3,17 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 import aio_pika
 
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
+
 # Mock Database for Inventory
 inventory_db = {
     99: {"name": "Super Fast Laptop", "stock": 10}
 }
+
+RABBITMQ_URL = os.getenv("RABBITMQ_URL", "amqp://guest:guest@rabbitmq:5672/")
 
 async def process_message(message: aio_pika.abc.AbstractIncomingMessage):
     try: 
@@ -44,8 +51,8 @@ import asyncio
 async def lifespan(app: FastAPI):
     # 1. Connect to RabbitMQ with retry
     for i in range(5):
-        try:
-            connection = await aio_pika.connect_robust("amqp://guest:guest@rabbitmq:5672/")
+        try:  
+            connection = await aio_pika.connect_robust(RABBITMQ_URL)
             channel = await connection.channel()
             break
         except Exception as e:

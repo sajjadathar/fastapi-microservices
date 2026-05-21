@@ -1,4 +1,4 @@
-# Python-generated files
+# Python cache
 __pycache__/
 *.py[oc]
 build/
@@ -6,11 +6,37 @@ dist/
 wheels/
 *.egg-info
 
+# or more specific (safer if you only want user_service)
+services/**/product_pb2.py
+services/**/product_pb2_grpc.py
+
 # Virtual environments
-.venv
+.venv/
 venv/
 env/
+
+# Environment files
+.env
+.env.*
 
 # Version control
 .git
 .github
+
+# IDEs
+.vscode/
+.idea/
+
+# Testing / cache
+.pytest_cache/
+.mypy_cache/
+.coverage
+htmlcov/
+
+# Logs
+*.log
+logs/
+
+# OS files
+.DS_Store
+Thumbs.db

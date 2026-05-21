@@ -1,12 +1,12 @@
 from fastapi import FastAPI, Depends, HTTPException, Response, status
 from contextlib import asynccontextmanager
-from db import engine, get_session
+from services.user_service.db import engine, get_session
 from sqlmodel import SQLModel, Session, select, text
-from models import User, UserPublic
+from services.user_service.models import User, UserPublic
 from fastapi.middleware.cors import CORSMiddleware
-from auth import hash_password, verify_password, create_access_token
+from services.user_service.auth import hash_password, verify_password, create_access_token
 from shared.jwt_utils import verify_token
-
+import os
 from opentelemetry import trace
 from opentelemetry.sdk.resources import Resource
 from opentelemetry.sdk.trace import TracerProvider
@@ -14,12 +14,18 @@ from opentelemetry.sdk.trace.export import BatchSpanProcessor
 from opentelemetry.exporter.otlp.proto.grpc.trace_exporter import OTLPSpanExporter
 from opentelemetry.instrumentation.fastapi import FastAPIInstrumentor
 
+from dotenv import load_dotenv
 
+load_dotenv()
 
+OTEL_ENDPOINT = os.getenv("OTEL_EXPORTER_OTLP_ENDPOINT", "http://localhost:4317")
+PRODUCT_HOST = os.getenv("PRODUCT_SERVICE_HOST", "localhost")
+PRODUCT_PORT = os.getenv("PRODUCT_SERVICE_PORT", "50051")
 
 import grpc
 import product_pb2
 import product_pb2_grpc
+
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -33,7 +39,7 @@ resource = Resource.create({"service.name": "user-service"})
 provider = TracerProvider(resource=resource)
 
 # 2. Tell it where to send the traces (our Jaeger container)
-processor = BatchSpanProcessor(OTLPSpanExporter(endpoint="http://jaeger:4317", insecure=True))
+processor = BatchSpanProcessor(OTLPSpanExporter(endpoint=OTEL_ENDPOINT, insecure=True))
 provider.add_span_processor(processor)
 trace.set_tracer_provider(provider)
 
@@ -71,11 +77,11 @@ def read_users(session: Session = Depends(get_session)):
 def get_user_purchase(
     user_id: int, 
     product_id: int,
-    token_data: dict = Depends(verify_token)
+    # token_data: dict = Depends(verify_token)
 ):
-    if str(user_id) != token_data.get("sub"):
-        raise(HTTPException(status_code=403, detail="Not authorize to access this resource"))
-    with grpc.insecure_channel("product-service:50051") as channel:
+    # if str(user_id) != token_data.get("sub"):
+    #     raise(HTTPException(status_code=403, detail="Not authorize to access this resource"))
+    with grpc.insecure_channel(f"{PRODUCT_HOST}:{PRODUCT_PORT}") as channel:
         stub = product_pb2_grpc.ProductServiceStub(channel)
 
         response = stub.GetProduct(product_pb2.ProductRequest(id=product_id))

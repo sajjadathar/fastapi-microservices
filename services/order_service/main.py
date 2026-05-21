@@ -8,13 +8,19 @@ rabbitmq_connection = None
 
 import asyncio
 
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
+RABBITMQ_URL = os.getenv("RABBITMQ_URL", "amqp://guest:guest@rabbitmq:5672/")
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     global rabbitmq_connection
     # Connect to RabbitMQ container with retry
     for i in range(5):
         try:
-            rabbitmq_connection = await aio_pika.connect_robust("amqp://guest:guest@rabbitmq:5672/")
+            rabbitmq_connection = await aio_pika.connect_robust(RABBITMQ_URL)
             break
         except Exception as e:
             print(f"RabbitMQ not ready yet, retrying in 2 seconds (attempt {i+1}/5)...")
