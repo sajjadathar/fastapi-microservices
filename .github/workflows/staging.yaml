@@ -1,4 +1,3 @@
-# creating images anf push to Dockerhub
 name: CD - Build and Push to Docker Hub
 
 on:
